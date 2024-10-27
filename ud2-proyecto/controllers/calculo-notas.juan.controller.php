@@ -6,8 +6,11 @@ declare(strict_types=1);
 
 $data = [];
 
+// Comprueba que el usuario a enviado algo mediante el formulario
 if (!empty($_POST)) {
     $data['errores'] = comprobarErroresForm($_POST['texto']);
+
+    //  Sanea el texto que se pone en el textarea
     $data['input']['texto'] = filter_var($_POST['texto'], FILTER_SANITIZE_SPECIAL_CHARS);
 
     if (empty($data['errores'])) {
@@ -60,6 +63,27 @@ if (!empty($_POST)) {
     }
     $resultado['materia'] = $datosMateria;
     $data['resultado'] = $resultado;
+}
+
+function agruparPorNotas(array $alumnos): array
+{
+    $promocionan = [];
+    $suspenden = [];
+    $noPromocionan = [];
+
+    foreach ($alumnos as $alumno => $suspensos) {
+        if ($suspensos === 0) {
+            $aprueban = $alumno; // Añade los alumnos que no suspendieron ninguna al array de promocionan
+        } else if($suspensos < 2) {
+            $promocionan[] = $alumno;
+        }else if( $suspensos > 0) {
+            $suspenden[] = $alumno; // Si no aprueban todas se añaden alumnos al de suspensos
+        }else if ($suspensos > 1) {
+                $noPromocionan[] = $alumno; // Si suspenden mas de 1, se añaden esos alumnos al array de noPromocionan
+            }
+        }
+
+    return ['aprueban'=>$aprueban,'promocionan' => $promocionan, 'suspenden' => $suspenden, 'noPromocionan' => $noPromocionan];
 }
 
 
