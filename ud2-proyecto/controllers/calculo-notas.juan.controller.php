@@ -109,33 +109,38 @@ function comprobarErroresForm(string $json): array
 {
     $errores = [];
     if (empty($json)) {
-        $errores['json'][] = 'El campo es obligatorio';
+        $errores['json'][] = 'El campo es obligatorio'; // Comprueba que el textarea está relleno con datos y lanza un mensaje si no lo está
     } else {
         $datos = json_decode($json, true);
 
         if (is_null($datos)) {
-            $errores['json'][] = 'Debes introducir un JSON valido';
+            $errores['json'][] = 'Debes introducir un JSON válido';
+        } elseif (!is_array($datos)) {
+            $errores['json'][] = 'El JSON debe ser un array de asignaturas';
         } else {
-            if (!is_array($datos)) {
-                $errores['json'][] = 'Debes introducir un array dentro del JSON';
-            } else {
-                foreach ($datos as $materia => $alumnos) {
-                    if (!is_string($materia) || mb_strlen($materia) == 0)
-                        $errores['json'][] = "Debes introducir una asignatura valida, ERROR: '$materia'";
+            // Validación de la estructura de cada asignatura
+            foreach ($datos as $materia => $alumnos) {
+                if (!is_string($materia) || trim($materia) === '') {
+                    $errores['json'][] = "Debes introducir un nombre de asignatura válido, ERROR: '$materia'";
                 }
-                if (!is_array($alumnos)) {
-                    $errores['json'][] = "El JSON debe ser un array de alumnos, ERROR: '$materia'";
+
+                if (!is_array($alumnos) || empty($alumnos)) {
+                    $errores['json'][] = "Cada asignatura debe contener un array de alumnos, ERROR en: '$materia'";
                 } else {
+                    // Valida de cada alumno y sus notas
                     foreach ($alumnos as $alumno => $notas) {
-                        if (!is_string($alumno) || mb_strlen(trim($alumno)) == 0) {
-                            $errores['json'][] = "Debes introducir un alumno válido, ERROR: '$alumno' en la materia '$materia'";
+                        if (!is_string($alumno) || trim($alumno) === '') {
+                            $errores['json'][] = "Debes introducir un nombre de alumno válido, ERROR en '$materia'";
                         }
+
                         if (!is_array($notas) || empty($notas)) {
                             $errores['json'][] = "Las notas de '$alumno' en '$materia' deben ser un array no vacío";
                         } else {
                             foreach ($notas as $nota) {
                                 if (!is_numeric($nota)) {
                                     $errores['json'][] = "Cada nota debe ser un número, ERROR: '$nota' de '$alumno' en '$materia'";
+                                } elseif ($nota < 0 || $nota > 10) {
+                                    $errores['json'][] = "Cada nota debe estar entre 0 y 10, ERROR: '$nota' de '$alumno' en '$materia'";
                                 }
                             }
                         }
@@ -144,6 +149,7 @@ function comprobarErroresForm(string $json): array
             }
         }
     }
+
     return $errores;
 }
 
