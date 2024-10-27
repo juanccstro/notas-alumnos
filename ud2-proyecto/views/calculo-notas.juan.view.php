@@ -18,7 +18,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Datos de las asignaturas</h6>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
+                    <table class="table table-striped">
                         <thead>
                         <tr>
                             <th>
@@ -49,10 +49,10 @@
                                 <td><?php echo $datosMateria['aprobados'] ?></td>
                                 <td><?php echo $datosMateria['suspensos'] ?></td>
                                 <td><?php echo $datosMateria['notaMax']['alumno'] ?>
-                                    : <?php echo is_numeric($datosMateria['notaMax']['nota']) ? number_format($datosMateria['notaMax']['nota'], 1, ',') : ''; ?>
+                                    : <?php echo $datosMateria['notaMax']['nota'] ?>
                                 </td>
                                 <td><?php echo $datosMateria['notaMin']['alumno'] ?>
-                                    : <?php echo is_numeric($datosMateria['notaMin']['nota']) ? number_format($datosMateria['notaMin']['nota'], 1, ',') : ''; ?>
+                                    : <?php echo $datosMateria['notaMin']['nota'] ?>
                                 </td>
                             </tr>
                             <?php

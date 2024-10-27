@@ -42,13 +42,15 @@ if (!empty($_POST)) {
                 }
 
                 // Nota mínima y máxima
-                if ($media > $maxNota) {
-                    $maxNota = $media;
-                    $maxAlumno = $alumno;
-                }
-                if ($media < $minNota) {
-                    $minNota = $media;
-                    $minAlumno = $alumno;
+                foreach ($notas as $nota) {
+                    if ($nota > $maxNota) {
+                        $maxNota = $nota;
+                        $maxAlumno = $alumno;
+                    }
+                    if ($nota < $minNota) {
+                        $minNota = $nota;
+                        $minAlumno = $alumno;
+                    }
                 }
             }
 
