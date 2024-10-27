@@ -18,7 +18,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Datos de las asignaturas</h6>
                 </div>
                 <div class="card-body">
-                    <table class="table-striped">
+                    <table class="table table-bordered">
                         <thead>
                         <tr>
                             <th>
@@ -48,10 +48,12 @@
                                 <td><?php echo is_numeric($datosMateria['notaMedia']) ? number_format($datosMateria['notaMedia'], 2, ',') : ''; ?></td>
                                 <td><?php echo $datosMateria['aprobados'] ?></td>
                                 <td><?php echo $datosMateria['suspensos'] ?></td>
-                                <td><?php echo $datosMateria['notaMax']['alumno'] ?> : <?php echo $datosMateria['notaMax']['nota'] ?>
-                                    </td>
-                                <td><?php echo $datosMateria['notaMin']['alumno'] ?> : <?php echo $datosMateria['notaMin']['nota'] ?>
-                                     </td>
+                                <td><?php echo $datosMateria['notaMax']['alumno'] ?>
+                                    : <?php echo is_numeric($datosMateria['notaMax']['nota']) ? number_format($datosMateria['notaMax']['nota'], 1, ',') : ''; ?>
+                                </td>
+                                <td><?php echo $datosMateria['notaMin']['alumno'] ?>
+                                    : <?php echo is_numeric($datosMateria['notaMin']['nota']) ? number_format($datosMateria['notaMin']['nota'], 1, ',') : ''; ?>
+                                </td>
                             </tr>
                             <?php
                         }
@@ -60,48 +62,51 @@
                     </table>
                 </div>
 
+
                 <!-- Tarjetas de colores dependientes de los alumnos que aprueban, no aprueban y el numero de suspensos -->
-                <div class="col-4">
-                    <div class="alert-success">
-                        <h6>Alumnos que aprueban todo:</h6>
-                        <?php
+                <div class="row">
+                    <div class="col-6">
+                        <div class="alert-success">
+                            <h6>Alumnos que aprueban todo:</h6>
+                            <?php
                             foreach ($data['listados']['aprueban'] as $alumno) {
                                 echo '<p>' . ($alumno) . '</p>';
                             }
-                        ?>
+                            ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-4">
-                    <div class="alert-warning">
-                        <h6>Alumnos con suspensos:</h6>
-                        <?php
+                    <div class="col-6">
+                        <div class="alert-warning">
+                            <h6>Alumnos con suspensos:</h6>
+                            <?php
                             foreach ($data['listados']['suspenden'] as $alumno) {
                                 echo '<p>' . ($alumno) . '</p>';
                             }
-                        ?>
+                            ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-4">
-                    <div class="alert-info">
-                        <h6>Alumnos que promocionan:</h6>
-                        <?php
+                    <div class="col-6">
+                        <div class="alert-info">
+                            <h6>Alumnos que promocionan:</h6>
+                            <?php
                             foreach ($data['listados']['promocionan'] as $alumno) {
                                 echo '<p>' . ($alumno) . '</p>';
                             }
-                        ?>
+                            ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-4">
-                    <div class="alert-danger">
-                        <h6>Alumnos que no promocionan:</h6>
-                        <?php
+                    <div class="col-6">
+                        <div class="alert-danger">
+                            <h6>Alumnos que no promocionan:</h6>
+                            <?php
                             foreach ($data['listados']['noPromocionan'] as $alumno) {
                                 echo '<p>' . ($alumno) . '</p>';
                             }
-                        ?>
+                            ?>
+                        </div>
                     </div>
                 </div>
             </div>

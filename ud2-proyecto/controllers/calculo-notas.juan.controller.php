@@ -5,8 +5,7 @@
 declare(strict_types=1);
 
 $data = [];
-
-// Comprueba que el usuario a enviado algo mediante el formulario
+// Comprueba que el usuario ha enviado algo mediante el formulario
 if (!empty($_POST)) {
     $data['errores'] = comprobarErroresForm($_POST['json']);
     $data['input']['json'] = filter_var($_POST['json'], FILTER_SANITIZE_SPECIAL_CHARS);
@@ -17,44 +16,50 @@ if (!empty($_POST)) {
         $resultado = [];
 
         foreach ($datos as $materia => $alumnos) {
-
-            $datosMateria = [];
-            $suspensos = $aprobados = $sumaNotas = 0;
-            $max = ['alumno' => '-', 'nota' => -1];
-            $min = ['alumno' => '-', 'nota' => 11];
+            $sumaNotas = 0;
+            $numAlumnos = count($alumnos);
+            $suspensos = $aprobados = 0;
+            $maxNota = -1;
+            $minNota = 11;
+            $maxAlumno = '';
+            $minAlumno = '';
 
             foreach ($alumnos as $alumno => $notas) {
-                $alumnosSusp[$alumno] = $alumnosSusp[$alumno] ?? 0;
-                $sumaNotas += array_sum($notas);
-                $numNotas = count($notas);
+                if (!isset($alumnosSusp[$alumno])) {
+                    $alumnosSusp[$alumno] = 0; // Establezco los alumnos suspensos a 0 si aun no existen
+                }
 
+                // Calculo la media del alumno para esa materia
+                $media = array_sum($notas) / count($notas);
+                $sumaNotas += $media;
 
-                // Calcular los suspensos y aprobados
-                if (max($notas) < 5) {
+                // Cuento suspensos y aprobados
+                if ($media < 5) {
                     $suspensos++;
-                    $alumnosSusp[$alumno] += 1;
+                    $alumnosSusp[$alumno]++;
                 } else {
                     $aprobados++;
                 }
 
                 // Nota mínima y máxima
-                $notaActual = max($notas);
-                if ($notaActual < $min['nota']) {
-                    $min = ['alumno' => $alumno, 'nota' => $notaActual];
+                if ($media > $maxNota) {
+                    $maxNota = $media;
+                    $maxAlumno = $alumno;
                 }
-                if ($notaActual > $max['nota']) {
-                    $max = ['alumno' => $alumno, 'nota' => $notaActual];
+                if ($media < $minNota) {
+                    $minNota = $media;
+                    $minAlumno = $alumno;
                 }
             }
 
-            $datosMateria = [
-                'notaMedia' => $sumaNotas / (count($alumnos) * $numNotas),
+
+            $resultado[$materia] = [
+                'notaMedia' => $sumaNotas / $numAlumnos, // Suma de todas las notas entre el numero de alumnos
                 'suspensos' => $suspensos,
                 'aprobados' => $aprobados,
-                'notaMax' => $max,
-                'notaMin' => $min
+                'notaMax' => ['alumno' => $maxAlumno, 'nota' => $maxNota],
+                'notaMin' => ['alumno' => $minAlumno, 'nota' => $minNota],
             ];
-            $resultado[$materia] = $datosMateria;
         }
 
         $data['resultado'] = $resultado;
@@ -74,14 +79,15 @@ function agruparPorNotas(array $alumnos): array
         if ($suspensos === 0) {
             // No suspende ninguna materia
             $aprueban[] = $alumno;
+            $promocionan[] = $alumno;
         } elseif ($suspensos < 2) {
             // Suspende solo una materia
             $promocionan[] = $alumno;
-            $suspenden[] = $alumno; // También entra en suspenden
+            $suspenden[] = $alumno;
         } elseif ($suspensos >= 2) {
             // Suspende dos o más materias
             $noPromocionan[] = $alumno;
-            $suspenden[] = $alumno; // También entra en suspenden
+            $suspenden[] = $alumno;
         }
     }
 
